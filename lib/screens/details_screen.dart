@@ -58,7 +58,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Image Section
-            Container(
+            SizedBox(
               height: 400,
               width: double.infinity,
               child: widget.shoe.imagePath.startsWith('http')
@@ -178,7 +178,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, -5),
             ),

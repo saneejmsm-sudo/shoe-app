@@ -8,6 +8,8 @@ import '../screens/register_screen.dart';
 import '../screens/main_layout.dart';
 
 class AppRoutes {
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   static const String root = '/';
   static const String login = '/login';
   static const String register = '/register';
@@ -28,7 +30,14 @@ class AppRoutes {
       case register:
         return MaterialPageRoute(builder: (_) => const RegisterScreen());
       case details:
-        final shoe = settings.arguments as Shoe;
+        final shoe = settings.arguments;
+        if (shoe is! Shoe) {
+          return MaterialPageRoute(
+            builder: (_) => const Scaffold(
+              body: Center(child: Text('Invalid shoe details passed.')),
+            ),
+          );
+        }
         return MaterialPageRoute(
           builder: (_) => DetailsScreen(shoe: shoe),
         );

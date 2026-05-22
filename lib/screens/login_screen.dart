@@ -99,15 +99,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     if (_emailController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
                       try {
                         await authProvider.login(_emailController.text, _passwordController.text);
-                        if (mounted) {
-                          Navigator.of(context).pushReplacementNamed(AppRoutes.root);
-                        }
+                        if (!context.mounted) return;
+                        Navigator.of(context).pushReplacementNamed(AppRoutes.root);
                       } catch (e) {
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Login failed: ${e.toString()}')),
-                          );
-                        }
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Login failed: ${e.toString()}')),
+                        );
                       }
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(

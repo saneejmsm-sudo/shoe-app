@@ -42,12 +42,12 @@ class CartProvider with ChangeNotifier {
   }
 
   void removeItem(String shoeId, String size) {
-    _items.remove('${shoeId}-$size');
+    _items.remove('$shoeId-$size');
     notifyListeners();
   }
 
   void updateQuantity(String shoeId, String size, int quantity) {
-    final key = '${shoeId}-$size';
+    final key = '$shoeId-$size';
     if (_items.containsKey(key)) {
       if (quantity <= 0) {
         _items.remove(key);

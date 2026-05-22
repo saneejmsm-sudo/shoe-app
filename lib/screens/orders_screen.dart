@@ -47,7 +47,7 @@ class OrdersScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 10,
                       ),
                     ],
@@ -65,7 +65,7 @@ class OrdersScreen extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                             decoration: BoxDecoration(
-                              color: Colors.green.withOpacity(0.1),
+                              color: Colors.green.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
@@ -98,7 +98,7 @@ class OrdersScreen extends StatelessWidget {
                             Text(CurrencyUtils.format(item.shoe.price * item.quantity)),
                           ],
                         ),
-                      )).toList(),
+                      )), // Removed unnecessary .toList()
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 15),
                         child: Divider(),

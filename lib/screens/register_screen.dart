@@ -120,15 +120,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       }
                       try {
                         await authProvider.signUp(_emailController.text, _passwordController.text);
-                        if (mounted) {
-                          Navigator.of(context).pushReplacementNamed(AppRoutes.root);
-                        }
+                        if (!context.mounted) return;
+                        Navigator.of(context).pushReplacementNamed(AppRoutes.root);
                       } catch (e) {
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Registration failed: ${e.toString()}')),
-                          );
-                        }
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Registration failed: ${e.toString()}')),
+                        );
                       }
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(

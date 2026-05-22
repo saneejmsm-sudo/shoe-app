@@ -30,7 +30,7 @@ class ShoeProvider with ChangeNotifier {
 
       _shoes = snapshot.docs.map((doc) => Shoe.fromMap(doc.data(), doc.id)).toList();
     } catch (e) {
-      print('Error fetching shoes: $e');
+      debugPrint('Error fetching shoes: $e');
       // Fallback to local data on error
       if (_shoes.isEmpty) {
         _shoes = AppData.shoes;
@@ -51,7 +51,7 @@ class ShoeProvider with ChangeNotifier {
       await batch.commit();
       _shoes = AppData.shoes;
     } catch (e) {
-      print('Error seeding data: $e');
+      debugPrint('Error seeding data: $e');
     }
   }
 

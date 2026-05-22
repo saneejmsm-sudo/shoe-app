@@ -31,7 +31,7 @@ class OrderProvider with ChangeNotifier {
 
       _orders = snapshot.docs.map((doc) => Order.fromMap(doc.data(), doc.id)).toList();
     } catch (e) {
-      print('Error fetching orders: $e');
+      debugPrint('Error fetching orders: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -72,7 +72,7 @@ class OrderProvider with ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      print('Error adding order: $e');
+      debugPrint('Error adding order: $e');
       _orders.remove(newOrder); // Rollback on error
       notifyListeners();
       rethrow;
