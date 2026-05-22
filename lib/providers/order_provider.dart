@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,12 +7,26 @@ import '../models/models.dart';
 class OrderProvider with ChangeNotifier {
   List<Order> _orders = [];
   bool _isLoading = false;
+  StreamSubscription<User?>? _authSubscription;
 
   bool get isLoading => _isLoading;
   List<Order> get orders => [..._orders];
 
   OrderProvider() {
-    fetchOrders();
+    _authSubscription = FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user != null) {
+        fetchOrders();
+      } else {
+        _orders = [];
+        notifyListeners();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    super.dispose();
   }
 
   Future<void> fetchOrders() async {
