@@ -93,7 +93,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             const Text('Gender', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             Row(
-              children: ['Male', 'Female', 'Other'].map((gender) {
+              children: ['Male', 'Female'].map((gender) {
                 final isSelected = _selectedGender == gender;
                 return Padding(
                   padding: const EdgeInsets.only(right: 15.0),
