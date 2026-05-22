@@ -5,6 +5,7 @@ import '../models/app_theme.dart';
 import '../models/cart_provider.dart';
 import '../widgets/app_button.dart';
 import 'cart_screen.dart';
+import '../utils/currency_utils.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Shoe shoe;
@@ -148,7 +149,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                         const SizedBox(width: 12),
                         Text(
-                          '\$${widget.shoe.price.toStringAsFixed(2)}',
+                          CurrencyUtils.format(widget.shoe.price),
                           style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w800,

@@ -2,10 +2,10 @@ import '../models/models.dart';
 
 class AppData {
   static List<Category> categories = [
-    Category(id: '1', name: 'Sneakers', icon: '👟'),
-    Category(id: '2', name: 'Running', icon: '🏃'),
-    Category(id: '3', name: 'Casual', icon: '🚶'),
-    Category(id: '4', name: 'Formal', icon: '👔'),
+    Category(id: '1', name: 'Running', icon: '🏃'),
+    Category(id: '2', name: 'Casual', icon: '🚶'),
+    Category(id: '3', name: 'Formal', icon: '👔'),
+    Category(id: '4', name: 'Sport', icon: '👟'),
   ];
 
   static List<Shoe> shoes = [
@@ -19,7 +19,7 @@ class AppData {
       availableSizes: ['40', '41', '42', '43', '44'],
       rating: 4.8,
       reviewsCount: 120,
-      category: 'Sneakers',
+      category: 'Sport',
     ),
     Shoe(
       id: '2',
@@ -79,7 +79,7 @@ class AppData {
       availableSizes: ['38', '39', '40', '41', '42', '43'],
       rating: 4.8,
       reviewsCount: 156,
-      category: 'Sneakers',
+      category: 'Sport',
     ),
   ];
 }

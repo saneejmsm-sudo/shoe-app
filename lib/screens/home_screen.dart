@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/shoe_provider.dart';
+import '../providers/navigation_provider.dart';
 import '../utils/app_data.dart';
 import '../widgets/shoe_card.dart';
 
@@ -10,8 +11,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final shoeProvider = Provider.of<ShoeProvider>(context);
-    final featuredShoes = shoeProvider.featuredShoes;
-    final trendingShoes = shoeProvider.trendingShoes;
+    final navigationProvider = Provider.of<NavigationProvider>(context, listen: false);
+    final shoes = shoeProvider.shoes;
 
     return Scaffold(
       body: SafeArea(
@@ -41,10 +42,10 @@ class HomeScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 25),
-                // Search Bar
+                // Search Bar - taps to navigate to Explore tab
                 GestureDetector(
                   onTap: () {
-                    // Navigate to explore with focus on search
+                    navigationProvider.setIndex(1); // Index 1 is Explore
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
@@ -69,7 +70,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 25),
-                // New Arrival Banner
+                // New Arrival Promo Banner
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Image.asset(
@@ -80,95 +81,72 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 25),
-                // Categories
+                // Categories section with (All, Running, Casual, Formal, Sport)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Categories', style: Theme.of(context).textTheme.titleLarge),
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text('See All'),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 15),
                 SizedBox(
-                  height: 100,
+                  height: 50,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: AppData.categories.length,
+                    itemCount: AppData.categories.length + 1,
                     itemBuilder: (context, index) {
-                      final category = AppData.categories[index];
+                      final isAll = index == 0;
+                      final categoryName = isAll ? 'All' : AppData.categories[index - 1].name;
+                      final isSelected = shoeProvider.selectedCategory == categoryName;
+
                       return Padding(
-                        padding: const EdgeInsets.only(right: 20),
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(15),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(15),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.05),
-                                    blurRadius: 5,
-                                  ),
-                                ],
-                              ),
-                              child: Text(category.icon, style: const TextStyle(fontSize: 24)),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(category.name, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
-                          ],
+                        padding: const EdgeInsets.only(right: 10),
+                        child: FilterChip(
+                          label: Text(categoryName),
+                          selected: isSelected,
+                          onSelected: (bool selected) {
+                            shoeProvider.setCategory(categoryName);
+                          },
+                          selectedColor: Theme.of(context).primaryColor,
+                          checkmarkColor: Colors.white,
+                          labelStyle: TextStyle(
+                            color: isSelected ? Colors.white : Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
                         ),
                       );
                     },
                   ),
                 ),
-                const SizedBox(height: 30),
-                // Featured
-                Text('Featured Shoes', style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 25),
+                // Product Grid (2-column product grid with product cards)
+                Text('Products', style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 15),
-                SizedBox(
-                  height: 280,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: featuredShoes.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 20),
-                        child: ShoeCard(shoe: featuredShoes[index], isHorizontal: true),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 30),
-                // Trending
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Trending', style: Theme.of(context).textTheme.titleLarge),
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text('View All'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 15),
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.75,
-                    crossAxisSpacing: 15,
-                    mainAxisSpacing: 15,
-                  ),
-                  itemCount: trendingShoes.length,
-                  itemBuilder: (context, index) {
-                    return ShoeCard(shoe: trendingShoes[index]);
-                  },
-                ),
+                shoes.isEmpty
+                    ? const Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 40.0),
+                          child: Text('No products found in this category.'),
+                        ),
+                      )
+                    : GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.70,
+                          crossAxisSpacing: 15,
+                          mainAxisSpacing: 15,
+                        ),
+                        itemCount: shoes.length,
+                        itemBuilder: (context, index) {
+                          return ShoeCard(shoe: shoes[index]);
+                        },
+                      ),
               ],
             ),
           ),
@@ -177,3 +155,4 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+

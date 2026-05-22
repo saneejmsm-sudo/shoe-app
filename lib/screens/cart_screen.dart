@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
-import '../providers/order_provider.dart';
-import '../models/models.dart';
+import '../providers/navigation_provider.dart';
 import '../routes/app_routes.dart';
 import '../utils/currency_utils.dart';
 
@@ -12,7 +11,7 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
-    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    final navigationProvider = Provider.of<NavigationProvider>(context, listen: false);
     final items = cartProvider.items.values.toList();
 
     return Scaffold(
@@ -39,7 +38,7 @@ class CartScreen extends StatelessWidget {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      // Navigate back to explore
+                      navigationProvider.setIndex(1); // Switch to Explore
                     },
                     child: const Text('Start Shopping'),
                   ),
@@ -90,9 +89,25 @@ class CartScreen extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    item.shoe.name,
-                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          item.shoe.name,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(),
+                                        onPressed: () {
+                                          cartProvider.removeItem(item.shoe.id, item.selectedSize);
+                                        },
+                                        icon: const Icon(Icons.delete_outline, color: Colors.grey, size: 20),
+                                      ),
+                                    ],
                                   ),
                                   Text(
                                     'Size: ${item.selectedSize}',
@@ -109,6 +124,7 @@ class CartScreen extends StatelessWidget {
                                 ],
                               ),
                             ),
+                            const SizedBox(width: 10),
                             Row(
                               children: [
                                 IconButton(
@@ -154,15 +170,15 @@ class CartScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('Subtotal', style: TextStyle(color: Colors.grey)),
-                          Text(CurrencyUtils.format(cartProvider.totalAmount)),
+                          Text(CurrencyUtils.format(cartProvider.subtotal)),
                         ],
                       ),
                       const SizedBox(height: 10),
-                      const Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Shipping', style: TextStyle(color: Colors.grey)),
-                          Text('Free'),
+                          const Text('Delivery Fee', style: TextStyle(color: Colors.grey)),
+                          Text(CurrencyUtils.format(cartProvider.deliveryFee)),
                         ],
                       ),
                       const Padding(
@@ -174,7 +190,7 @@ class CartScreen extends StatelessWidget {
                         children: [
                           const Text('Total', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                           Text(
-                            CurrencyUtils.format(cartProvider.totalAmount),
+                            CurrencyUtils.format(cartProvider.total),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
@@ -188,22 +204,9 @@ class CartScreen extends StatelessWidget {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            final orderItems = items.map((item) => OrderItem(
-                              shoe: item.shoe,
-                              quantity: item.quantity,
-                              size: item.selectedSize,
-                            )).toList();
-                            
-                            orderProvider.addOrder(orderItems, cartProvider.totalAmount);
-                            cartProvider.clear();
-                            
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Order placed successfully!')),
-                            );
-                            
-                            Navigator.of(context).pushNamed(AppRoutes.orders);
+                            Navigator.of(context).pushNamed(AppRoutes.checkout);
                           },
-                          child: const Text('Checkout'),
+                          child: const Text('Proceed to Checkout'),
                         ),
                       ),
                     ],

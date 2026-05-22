@@ -28,14 +28,19 @@ class CartProvider with ChangeNotifier {
     return total;
   }
 
-  void addItem(Shoe shoe, String size) {
+  double get subtotal => totalAmount;
+  double get deliveryFee => totalAmount > 0 ? 10.0 : 0.0;
+  double get total => subtotal + deliveryFee;
+
+  void addItem(Shoe shoe, String size, {int quantity = 1}) {
     final key = '${shoe.id}-$size';
     if (_items.containsKey(key)) {
-      _items[key]!.quantity += 1;
+      _items[key]!.quantity += quantity;
     } else {
       _items[key] = CartItem(
         shoe: shoe,
         selectedSize: size,
+        quantity: quantity,
       );
     }
     notifyListeners();

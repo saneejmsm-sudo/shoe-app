@@ -61,6 +61,25 @@ class ShoeCard extends StatelessWidget {
                 ),
                 Positioned(
                   top: 10,
+                  left: 10,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.redAccent,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text(
+                      'SALE',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 10,
                   right: 10,
                   child: GestureDetector(
                     onTap: () {

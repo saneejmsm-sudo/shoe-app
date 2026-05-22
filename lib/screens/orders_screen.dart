@@ -65,12 +65,24 @@ class OrdersScreen extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                             decoration: BoxDecoration(
-                              color: Colors.green.withValues(alpha: 0.1),
+                              color: (order.status.toLowerCase() == 'delivered'
+                                  ? Colors.green
+                                  : order.status.toLowerCase() == 'in transit'
+                                      ? Colors.blue
+                                      : Colors.orange).withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
                               order.status,
-                              style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 12),
+                              style: TextStyle(
+                                color: order.status.toLowerCase() == 'delivered'
+                                    ? Colors.green
+                                    : order.status.toLowerCase() == 'in transit'
+                                        ? Colors.blue
+                                        : Colors.orange,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
                         ],

@@ -40,17 +40,26 @@ class OrderProvider with ChangeNotifier {
 
   Future<void> addOrder(List<OrderItem> items, double total) async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
+
+    final statuses = ['Processing', 'In Transit', 'Delivered'];
+    final selectedStatus = statuses[DateTime.now().millisecondsSinceEpoch % statuses.length];
 
     final newOrder = Order(
       id: DateTime.now().millisecondsSinceEpoch.toString(), // Temp ID
       items: items,
       totalAmount: total,
       date: DateTime.now(),
+      status: selectedStatus,
     );
 
     _orders.insert(0, newOrder);
     notifyListeners();
+
+    if (user == null) {
+      return;
+    }
+
+
 
     try {
       final docRef = await FirebaseFirestore.instance

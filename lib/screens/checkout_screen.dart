@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/app_theme.dart';
-import '../models/cart_provider.dart';
+import '../models/models.dart';
+import '../providers/cart_provider.dart';
+import '../providers/order_provider.dart';
 import '../widgets/app_button.dart';
+import '../utils/currency_utils.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -12,90 +15,99 @@ class CheckoutScreen extends StatefulWidget {
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
-  int _paymentMethod = 0; // 0=Card, 1=PayPal, 2=Cash
-  bool _orderPlaced = false;
+  int _paymentMethod = 0; // 0=Card, 1=COD
+  final _addressController = TextEditingController(text: '123 Main Street, Colombo 03, Sri Lanka');
 
   final _payments = [
     {'icon': '💳', 'label': 'Credit / Debit Card'},
-    {'icon': '🅿️', 'label': 'PayPal'},
     {'icon': '💵', 'label': 'Cash on Delivery'},
   ];
 
+  @override
+  void dispose() {
+    _addressController.dispose();
+    super.dispose();
+  }
+
   void _placeOrder() {
-    setState(() => _orderPlaced = true);
-    context.read<CartProvider>().clearCart();
+    final cart = context.read<CartProvider>();
+    final orderProvider = context.read<OrderProvider>();
+
+    if (cart.items.isEmpty) return;
+
+    final orderItems = cart.items.values.map((item) => OrderItem(
+      shoe: item.shoe,
+      quantity: item.quantity,
+      size: item.selectedSize,
+    )).toList();
+
+    orderProvider.addOrder(orderItems, cart.total);
+    cart.clear();
+
+    // Show a success confirmation modal
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(25.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.green.shade50,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.check_circle, size: 60, color: Colors.green),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Order Placed!',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Your shoes are on their way. Thank you for shopping with us!',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey),
+              ),
+              const SizedBox(height: 25),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop(); // Dismiss Dialog
+                    Navigator.popUntil(context, (route) => route.isFirst); // Go back home
+                  },
+                  child: const Text('Back to Home'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final cart = context.watch<CartProvider>();
 
-    if (_orderPlaced) {
-      return Scaffold(
-        backgroundColor: kBackground,
-        body: SafeArea(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: Colors.green.shade50,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Center(
-                      child: Text('✅', style: TextStyle(fontSize: 48)),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  const Text(
-                    'Order Placed!',
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w800,
-                      color: kBlack,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Your shoes are on their way.\nThank you for shopping with SOLE.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14, color: kGrey, height: 1.5),
-                  ),
-                  const SizedBox(height: 36),
-                  AppButton(
-                    label: 'Back to Home',
-                    onTap: () {
-                      Navigator.popUntil(context, (route) => route.isFirst);
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
       backgroundColor: kBackground,
       appBar: AppBar(
         backgroundColor: kBackground,
         elevation: 0,
-        leading: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: kLightGrey,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(Icons.arrow_back_rounded, color: kBlack, size: 20),
-          ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: kBlack),
+          onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Checkout',
@@ -131,22 +143,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         color: kBlack, size: 22),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Jordan Lee',
+                        const Text('saneejmsm',
                             style: TextStyle(
-                                fontSize: 13,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w600,
                                 color: kBlack)),
-                        SizedBox(height: 2),
-                        Text('123 Main Street, Colombo 03\nSri Lanka',
-                            style: TextStyle(fontSize: 12, color: kGrey, height: 1.4)),
+                        const SizedBox(height: 4),
+                        Text(_addressController.text,
+                            style: const TextStyle(fontSize: 12, color: kGrey, height: 1.4)),
                       ],
                     ),
                   ),
-                  const Icon(Icons.chevron_right_rounded, color: kGrey),
                 ],
               ),
             ),
@@ -223,14 +234,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
               child: Column(
                 children: [
-                  _row('Subtotal', '\$${cart.subtotal.toStringAsFixed(2)}'),
+                  _row('Subtotal', CurrencyUtils.format(cart.subtotal)),
                   const SizedBox(height: 8),
-                  _row('Shipping',
-                      cart.shipping == 0 ? 'Free' : '\$${cart.shipping.toStringAsFixed(2)}'),
-                  const SizedBox(height: 8),
-                  _row('Discount',
-                      cart.discount > 0 ? '-\$${cart.discount.toStringAsFixed(2)}' : '\$0.00',
-                      valueColor: Colors.green),
+                  _row('Delivery Fee', CurrencyUtils.format(cart.deliveryFee)),
                   const Divider(height: 20, color: kBorder),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -240,7 +246,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
                               color: kBlack)),
-                      Text('\$${cart.total.toStringAsFixed(2)}',
+                      Text(CurrencyUtils.format(cart.total),
                           style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w800,

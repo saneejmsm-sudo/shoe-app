@@ -4,8 +4,31 @@ import '../providers/shoe_provider.dart';
 import '../utils/app_data.dart';
 import '../widgets/shoe_card.dart';
 
-class ExploreScreen extends StatelessWidget {
+class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
+
+  @override
+  State<ExploreScreen> createState() => _ExploreScreenState();
+}
+
+class _ExploreScreenState extends State<ExploreScreen> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize controller with current provider query if any
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final shoeProvider = Provider.of<ShoeProvider>(context, listen: false);
+      _searchController.text = shoeProvider.shoes.isNotEmpty ? "" : "";
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,8 +40,12 @@ class ExploreScreen extends StatelessWidget {
         title: const Text('Explore Shoes'),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.filter_list),
+            onPressed: () {
+              // Clear search
+              _searchController.clear();
+              shoeProvider.setSearchQuery('');
+            },
+            icon: const Icon(Icons.refresh),
           ),
         ],
       ),
@@ -28,10 +55,20 @@ class ExploreScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: TextField(
+              controller: _searchController,
               onChanged: (value) => shoeProvider.setSearchQuery(value),
               decoration: InputDecoration(
                 hintText: 'Search brand or model...',
                 prefixIcon: const Icon(Icons.search),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          shoeProvider.setSearchQuery('');
+                        },
+                      )
+                    : null,
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
@@ -42,7 +79,48 @@ class ExploreScreen extends StatelessWidget {
               ),
             ),
           ),
-          // Categories Filter
+          
+          // Trending Keywords as Pills
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+            child: SizedBox(
+              height: 35,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  const Center(
+                    child: Text(
+                      'Trending: ',
+                      style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, fontSize: 13),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  ...['Nike', 'Adidas', 'Max', 'Ultraboost', 'Run'].map((keyword) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: ActionChip(
+                        label: Text(keyword),
+                        onPressed: () {
+                          setState(() {
+                            _searchController.text = keyword;
+                          });
+                          shoeProvider.setSearchQuery(keyword);
+                        },
+                        backgroundColor: Colors.grey[200],
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 15),
+
+          // Categories Filter Tabs
           SizedBox(
             height: 50,
             child: ListView.builder(
@@ -124,3 +202,4 @@ class ExploreScreen extends StatelessWidget {
     );
   }
 }
+

@@ -9,8 +9,22 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    final userEmail = authProvider.userEmail ?? 'john.doe@example.com';
-    final userName = authProvider.userName ?? 'John Doe';
+    final userEmail = authProvider.userEmail ?? 'saneejmsm@gmail.com';
+    final userName = authProvider.userName ?? 'saneejmsm';
+
+    // Get initials
+    String initials = '';
+    if (userName.isNotEmpty) {
+      initials = userName.trim().substring(0, 1).toUpperCase();
+      if (userName.trim().contains(' ') && userName.trim().split(' ').length > 1) {
+        final parts = userName.trim().split(' ');
+        initials += parts[1].substring(0, 1).toUpperCase();
+      } else if (userName.length > 1) {
+        initials += userName.substring(1, 2).toUpperCase();
+      }
+    } else {
+      initials = 'S';
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -20,13 +34,21 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            // User Info
+            // User Info with Initials Avatar
             Center(
               child: Column(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 60,
-                    backgroundImage: NetworkImage('https://i.pravatar.cc/150?u=a042581f4e29026704d'),
+                    backgroundColor: Theme.of(context).primaryColor,
+                    child: Text(
+                      initials,
+                      style: const TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 15),
                   Text(
@@ -52,31 +74,31 @@ class ProfileScreen extends StatelessWidget {
               context,
               icon: Icons.person_outline,
               title: 'Personal Info',
-              onTap: () {},
+              onTap: () => Navigator.of(context).pushNamed(AppRoutes.personalInfo),
             ),
             _buildProfileItem(
               context,
               icon: Icons.location_on_outlined,
               title: 'Addresses',
-              onTap: () {},
+              onTap: () => Navigator.of(context).pushNamed(AppRoutes.addresses),
             ),
             _buildProfileItem(
               context,
               icon: Icons.payment_outlined,
               title: 'Payment Methods',
-              onTap: () {},
+              onTap: () => Navigator.of(context).pushNamed(AppRoutes.paymentMethods),
             ),
             _buildProfileItem(
               context,
               icon: Icons.settings_outlined,
               title: 'Settings',
-              onTap: () {},
+              onTap: () => Navigator.of(context).pushNamed(AppRoutes.settingsScreen),
             ),
             _buildProfileItem(
               context,
               icon: Icons.help_outline,
               title: 'Help Center',
-              onTap: () {},
+              onTap: () => Navigator.of(context).pushNamed(AppRoutes.helpCenter),
             ),
             const SizedBox(height: 20),
             Padding(
