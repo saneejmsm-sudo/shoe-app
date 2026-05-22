@@ -16,13 +16,13 @@ void main() async {
   // Initialize Firebase with Web options
   await Firebase.initializeApp(
     options: const FirebaseOptions(
-      apiKey: "AIzaSyBvWAobAMLf8TCw92Pk0tl23gTwB44_7A8",
-      appId: "1:918221994940:web:7e4aed3bbe4446eba7c9b9",
-      messagingSenderId: "918221994940",
-      projectId: "luxewear-app",
-      storageBucket: "luxewear-app.firebasestorage.app",
-      authDomain: "luxewear-app.firebaseapp.com",
-      measurementId: "G-DHKNX54Q2D",
+      apiKey: "AIzaSyDEXwRXz04DL_mkYKwWET4B3Ebb6ys8SdU",
+      appId: "1:592344843969:web:b8445b13c59f015c82f640",
+      messagingSenderId: "592344843969",
+      projectId: "shoe-shop-app-31dfb",
+      storageBucket: "shoe-shop-app-31dfb.firebasestorage.app",
+      authDomain: "shoe-shop-app-31dfb.firebaseapp.com",
+      measurementId: "G-HWTMTP1CS2",
     ),
   );
 

@@ -3,5 +3,11 @@
     "providers": {
       "emailPassword": true
     }
+  },
+  "firestore": {
+    "database": "(default)",
+    "location": "us-central",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
   }
 }
